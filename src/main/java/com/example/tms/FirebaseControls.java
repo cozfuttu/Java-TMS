@@ -74,6 +74,7 @@ public class FirebaseControls {
             return document.getData();
         }
         else {
+            System.out.println("User not found!");
             // Throwing a custom error.
             throw new UserNotFoundException();
         }
@@ -106,9 +107,13 @@ public class FirebaseControls {
                 throw new WrongPasswordException();
             }
         } catch (UserNotFoundException | ExecutionException | InterruptedException | WrongPasswordException | IOException e) {
-            if(e.getClass() == UserNotFoundException.class || e.getClass() == WrongPasswordException.class) ErrorLabel.setText(e.toString());
+            if(e.getClass() == UserNotFoundException.class || e.getClass() == WrongPasswordException.class) {
+                ErrorLabel.setText(e.toString());
+                ErrorLabel.setVisible(true);
+            }
             else {
                 ErrorLabel.setText("Bilinmeyen bir hata olustu.");
+                ErrorLabel.setVisible(true);
                 System.out.println(e);
             }
         }

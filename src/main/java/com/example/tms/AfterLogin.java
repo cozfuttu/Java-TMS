@@ -33,6 +33,7 @@ public class AfterLogin {
         TaxAmountLabel.setText(userInfo.get("odenmemisVergiMiktari").toString() + " TL");
         if (userInfo.get("odenmemisVergiMiktari").toString().equals("0")) {
             TaxStatus.setText("ODENMEMIŞ VERGİNİZ BULUNMAMAKTADIR!");
+            PayTaxButton.setVisible(false);
         }
         else {
             TaxStatus.setText("ODENMEMIŞ VERGİNİZ BULUNMAKTADIR!");

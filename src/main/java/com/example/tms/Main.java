@@ -25,6 +25,7 @@ public class Main extends Application {
 
     public void changeScene(String fxml) throws IOException {
         Parent pane = FXMLLoader.load(getClass().getResource(fxml));
+        stg.setTitle("Tax");
         stg.getScene().setRoot(pane);
     }
 
@@ -35,6 +36,7 @@ public class Main extends Application {
 
         AfterLogin afterLogin = loader.getController();
         afterLogin.setUserInfo(userInfo);
+        stg.setTitle("User Screen");
         stg.getScene().setRoot(tableViewParent);
     }
 
