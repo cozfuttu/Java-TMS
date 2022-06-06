@@ -8,7 +8,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 public class OTV extends Vergi {
+    Map<String, Object> userInfo = new HashMap<>();
 
     @FXML
     public Label TaxAmountLabel;
@@ -39,15 +44,15 @@ public class OTV extends Vergi {
         switch(hacim){
             case "1600 cm³ veya daha az":
                 otvYuzde = 45;
+                break;
             case "1601 cm³ - 1800 cm³":
-                otvYuzde = 130;
             case "1801 cm³ - 2000 cm³":
                 otvYuzde = 130;
+                break;
             case "2001 cm³ - 2500 cm³":
-                otvYuzde = 220;
             case "2501 cm³ veya daha çok":
                 otvYuzde = 220;
-            break;
+                break;
         }
         int vergisizFiyat = (100 * fiyat) / (100 + otvYuzde);
         setVergi(fiyat - vergisizFiyat);

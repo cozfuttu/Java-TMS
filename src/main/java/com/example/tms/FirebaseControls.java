@@ -5,9 +5,7 @@ import com.example.tms.exceptions.UserNotFoundException;
 import com.example.tms.exceptions.WrongPasswordException;
 import com.example.tms.objects.User;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
@@ -24,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -43,6 +42,7 @@ public class FirebaseControls {
         }
     }
 
+    // Databaseye kullanıcı ekleme
     public void addUser(User user) throws ExecutionException, InterruptedException, UserExistsException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         DocumentReference docRef = dbFirestore.collection("users").document(user.getTCKN());
@@ -65,13 +65,16 @@ public class FirebaseControls {
         }
     }
 
-    public Map<String, Object> getUserByTCKN(String TCKN) throws ExecutionException, InterruptedException, UserNotFoundException {
+    // TCKN'den kullanıcı çekme fonksiyonu
+    public User getUserByTCKN(String TCKN) throws ExecutionException, InterruptedException, UserNotFoundException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         DocumentReference docRef = dbFirestore.collection("users").document(TCKN);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
         if (document.exists()) {
-            return document.getData();
+            Map<String, Object> data = document.getData();
+            User user = new User(data.get("TCKN").toString(), data.get("password").toString(), Integer.parseInt(data.get("odenmemisVergiMiktari").toString()), Integer.parseInt(data.get("odenmisVergiMiktari").toString()));
+            return user;
         }
         else {
             System.out.println("User not found!");
@@ -79,6 +82,35 @@ public class FirebaseControls {
             throw new UserNotFoundException();
         }
     }
+
+    // Database üzerinde kayıtlı tüm kullanıcı bilgileri alınır, Linked List şeklinde döndürülür.
+    public LinkedList getAllUsers() throws ExecutionException, InterruptedException, UserNotFoundException {
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection("users").get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        LinkedList userDatas = new LinkedList();
+        for (QueryDocumentSnapshot doc : documents) {
+            Map<String, Object> data = doc.getData();
+            User user = new User(data.get("TCKN").toString(), data.get("password").toString(), Integer.parseInt(data.get("odenmemisVergiMiktari").toString()), Integer.parseInt(data.get("odenmisVergiMiktari").toString()));
+            userDatas.insert(user);
+        }
+        return userDatas;
+    }
+
+    // Database üzerinde kayıtlı tüm kullanıcı bilgileri alınır, Binary Search Tree şeklinde döndürülür.
+    public BST getAllUsersTree() throws ExecutionException, InterruptedException, UserNotFoundException {
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection("users").get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        BST tree = new BST();
+        for (QueryDocumentSnapshot doc : documents) {
+            Map<String, Object> data = doc.getData();
+            User user = new User(data.get("TCKN").toString(), data.get("password").toString(), Integer.parseInt(data.get("odenmemisVergiMiktari").toString()), Integer.parseInt(data.get("odenmisVergiMiktari").toString()));
+            tree.insert(user);
+        }
+        return tree;
+    }
+
 
     @FXML
     private Button LoginButton;
@@ -93,15 +125,24 @@ public class FirebaseControls {
     @FXML
     private ImageView LockImage;
 
+    // Giriş yapma butonuna basıldığında girilen tckn ve şifreyle giriş yapılır.
     public void userLogIn() {
         ErrorLabel.setVisible(false);
         String TCKN = TCKNField.getText();
         try {
-            Map<String, Object> userInfo = getUserByTCKN(TCKN);
+            User userInfo = getUserByTCKN(TCKN);
             String sifre = PasswordField.getText();
-            if (sifre.equals(userInfo.get("password"))) {
+            if (sifre.equals(userInfo.getSifre())) {
+                LinkedList users = getAllUsers();
+                LinkedList tt = users.findTopThree();
+                BST u = getAllUsersTree();
+                User[] topThree = u.findThreeLargest();
+                int i;
+                for (i = 0; i < 3; i++) {
+                    System.out.println(tt.get(i).user.getOdenmemisVergiMiktari());
+                }
                 Main m = new Main();
-                m.changeSceneToUserScreen(userInfo);
+                m.changeSceneToUserScreen(userInfo, topThree);
             }
             else {
                 throw new WrongPasswordException();
@@ -119,17 +160,19 @@ public class FirebaseControls {
         }
     }
 
+    // Şifre al butonuna basıldığında kullanıcının şifresi database üzerinden bulunup geri döndürülür.
     public void userGetPassword() throws UserExistsException, ExecutionException, InterruptedException {
         ErrorLabel.setVisible(false);
         String TCKN = TCKNField.getText();
         try {
             if (TCKN.length() != 11) throw new IOException();
-            Map<String, Object> userInfo = getUserByTCKN(TCKN);
-            String sifre = userInfo.get("password").toString();
+            User userInfo = getUserByTCKN(TCKN);
+            String sifre = userInfo.getSifre();
             AlertBox.showAlertBox("Başarılı!", "Sifreniz: " + sifre);
         } catch (Exception e) {
             if (e.getClass() == UserNotFoundException.class) {
-                final int PASSWORD_LENGTH = 6;
+                String[] characters = {"a", "b", "c", "d", "e", "f", "g"};
+                final int PASSWORD_LENGTH = 5;
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < PASSWORD_LENGTH; i++) {
                     int randomInt = (int) (Math.random() * (122 - 48)) + 48;
@@ -138,6 +181,8 @@ public class FirebaseControls {
                     }
                     sb.append((char) randomInt);
                 }
+                int randomInt2 = (int) (Math.random() * characters.length);
+                sb.append(characters[randomInt2]);
                 int odenmemisVergiMiktari = (int) (Math.random() * 10000);
                 String sifre = sb.toString();
                 User newUser = new User(TCKN, sifre, odenmemisVergiMiktari, 0);
@@ -156,22 +201,4 @@ public class FirebaseControls {
             }
         }
     }
-
-    // From here, the controls are for the user screen.
-
-
-    public void openGelirVergisiWindow() throws IOException {
-        Main m = new Main();
-        m.changeScene("gelir-vergisi.fxml");
-    }
-
-    public void openOTVWindow() throws IOException {
-        Main m = new Main();
-        m.changeScene("otv.fxml");
-    }
-
-    public void payTax() {
-
-    }
-
 }

@@ -11,7 +11,5 @@ abstract public class Vergi {
         this.vergi = vergi;
     }
 
-    public void calculate() {
-        setVergi(1000);
-    }
+    public void calculate() {}
 }

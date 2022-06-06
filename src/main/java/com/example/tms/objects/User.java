@@ -1,5 +1,7 @@
 package com.example.tms.objects;
 
+import com.example.tms.Stack;
+
 interface UserInterface {
     public void setTCKN(String email);
 
@@ -60,5 +62,25 @@ public class User implements UserInterface {
 
     public int getOdenmisVergiMiktari() {
         return odenmisVergiMiktari;
+    }
+
+    public boolean palindromMu() {
+        int count = TCKN.length();
+        Stack<Character> stack = new Stack<>(count);
+
+        for (int i = 0; i < TCKN.length(); i++) {
+            stack.push(TCKN.charAt(i));
+        }
+
+        String reverseInput = "";
+
+        while (!stack.bos_mu()) {
+            reverseInput += stack.pop();
+        }
+
+        if (TCKN.equals(reverseInput))
+            return true;
+        else
+            return false;
     }
 }

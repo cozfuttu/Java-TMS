@@ -3,11 +3,11 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
-
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tms.AfterLogin">
    <children>
@@ -16,7 +16,7 @@
             <Image url="@../../../back2.png" />
          </image>
       </ImageView>
-      <Label fx:id="GelirVergisiLabel" layoutX="66.0" layoutY="142.0" onMouseClicked="#openGelirVergisiWindow" prefHeight="86.0" prefWidth="218.0" text="GELİR VERGİSİ HESAPLAMA" textAlignment="CENTER" textFill="#02fada" underline="true" wrapText="true">
+      <Label fx:id="GelirVergisiLabel" layoutX="66.0" layoutY="93.0" onMouseClicked="#openGelirVergisiWindow" prefHeight="86.0" prefWidth="218.0" text="GELİR VERGİSİ HESAPLAMA" textAlignment="CENTER" textFill="#02fada" underline="true" wrapText="true">
          <font>
             <Font size="28.0" />
          </font>
@@ -24,7 +24,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Label>
-      <Label fx:id="OTVLabel" layoutX="66.0" layoutY="278.0" onMouseClicked="#openOTVWindow" prefHeight="63.0" prefWidth="218.0" text="ÖTV HESAPLAMA" textAlignment="CENTER" textFill="#02fada" underline="true" wrapText="true">
+      <Label fx:id="OTVLabel" layoutX="66.0" layoutY="179.0" onMouseClicked="#openOTVWindow" prefHeight="63.0" prefWidth="218.0" text="ÖTV HESAPLAMA" textAlignment="CENTER" textFill="#02fada" underline="true" wrapText="true">
          <font>
             <Font size="28.0" />
          </font>
@@ -37,24 +37,56 @@
             <Font size="32.0" />
          </font>
       </Label>
-      <Label layoutX="447.0" layoutY="249.0" prefHeight="49.0" prefWidth="166.0" text="Vergi Tutarınız: " textFill="#f6ff00">
+      <Label layoutX="460.0" layoutY="225.0" prefHeight="49.0" prefWidth="166.0" text="Vergi Tutarınız: " textFill="#f6ff00">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Label fx:id="TaxAmountLabel" layoutX="613.0" layoutY="249.0" prefHeight="49.0" prefWidth="122.0" text="0 TL" textFill="#00ff75">
+      <Label fx:id="TaxAmountLabel" ellipsisString="" layoutX="626.0" layoutY="225.0" prefHeight="49.0" prefWidth="149.0" text="0 TL" textFill="#00ff73">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Button fx:id="PayTaxButton" layoutX="498.0" layoutY="321.0" mnemonicParsing="false" onAction="#payTax" prefHeight="40.0" prefWidth="148.0" style="-fx-background-color: rgb(172, 0, 132); -fx-border-style: solid; -fx-border-radius: 8px; -fx-background-radius: 12px;" text="Vergiyi ÖDE!">
+      <Button fx:id="PayTaxButton" layoutX="499.0" layoutY="274.0" mnemonicParsing="false" onAction="#payTax" prefHeight="40.0" prefWidth="148.0" style="-fx-background-color: rgb(172, 0, 132); -fx-border-style: solid; -fx-border-radius: 8px; -fx-background-radius: 12px;" text="Vergiyi ÖDE!">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <Label fx:id="UsernameLabel" layoutX="291.0" layoutY="39.0" prefHeight="40.0" prefWidth="218.0" style="-fx-alignment: center;" text="Hoşgeldiniz, Username" textAlignment="CENTER" textFill="#ff8f00">
+      <Label fx:id="UsernameLabel" layoutX="271.0" layoutY="27.0" prefHeight="40.0" prefWidth="269.0" style="-fx-alignment: center;" text="Hoşgeldiniz, Username" textAlignment="CENTER" textFill="#ff8f00">
          <font>
             <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="69.0" layoutY="266.0" prefHeight="40.0" prefWidth="212.0" text="VERGİ SIRALAMASI" textAlignment="CENTER" textFill="#abff0d">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="HighestTaxFirst" layoutX="55.0" layoutY="311.0" prefHeight="29.0" prefWidth="277.0" text="1) 13131313131 - 5000 TL" textFill="#ffab00">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="HighestTaxSecond" layoutX="55.0" layoutY="346.0" prefHeight="29.0" prefWidth="277.0" text="2) 13131313631 - 4000 TL" textFill="#f6ff00">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="HighestTaxThird" layoutX="55.0" layoutY="379.0" prefHeight="29.0" prefWidth="277.0" text="3) 13131313131 - 3000 TL" textFill="#00ff0d">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <TextField fx:id="TaxField" layoutX="443.0" layoutY="334.0" promptText="TCKN" />
+      <Button fx:id="GetTaxButton" layoutX="604.0" layoutY="334.0" mnemonicParsing="false" onAction="#getTax" text="Vergisini Öğren" />
+      <Label fx:id="TaxPaidLabel" layoutX="461.0" layoutY="364.0" prefHeight="75.0" prefWidth="232.0" text="Bu kullanıcının ödenmemiş vergisi bulunmamaktadır." textAlignment="CENTER" textFill="#0eff2e" visible="false" wrapText="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="PalindromText" alignment="CENTER" layoutX="114.0" layoutY="61.0" prefHeight="25.0" prefWidth="643.0" text="TEBRİKLER! KİMLİK NUMARANIZ BİR PALİNDROM! (Vergi indirimi %5)" textAlignment="CENTER" textFill="#0afc3f">
+         <font>
+            <Font size="16.0" />
          </font>
       </Label>
    </children>
